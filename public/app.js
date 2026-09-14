@@ -2,6 +2,7 @@ let csrfToken = '';
 let dashboardData = null;
 let currentDebtor = null;
 let currentView = 'dashboard';
+let sessionData = null;
 
 const $ = (id) => document.getElementById(id);
 const money = (cents) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format((Number(cents) || 0) / 100);
@@ -16,6 +17,17 @@ function formatDate(value) {
   if (parts.length !== 3) return datePart;
   return `${parts[2]}/${parts[1]}/${parts[0]}`;
 }
+function formatDateTime(value) {
+  if (!value) return 'Ainda não registrado';
+  const raw = String(value).replace(' ', 'T');
+  const d = new Date(raw.endsWith('Z') ? raw : `${raw}Z`);
+  if (Number.isNaN(d.getTime())) return String(value);
+  return new Intl.DateTimeFormat('pt-BR', {
+    dateStyle: 'short',
+    timeStyle: 'short'
+  }).format(d);
+}
+
 function localToday() {
   const d = new Date();
   const y = d.getFullYear();
@@ -56,8 +68,9 @@ function closeModal(id) { $(id).classList.add('hidden'); }
 
 async function init() {
   try {
-    const session = await api('/api/session');
-    csrfToken = session.csrfToken;
+    sessionData = await api('/api/session');
+    csrfToken = sessionData.csrfToken;
+    $('accountSidebarName').textContent = sessionData.user || 'Administrador';
     await loadDashboard();
     bindEvents();
   } catch (_e) {
@@ -74,11 +87,14 @@ async function loadDashboard() {
 function renderDashboard() {
   const { totals, debtors, recent } = dashboardData;
   $('statRemaining').textContent = money(totals.remaining_cents);
+  $('heroRemaining').textContent = money(totals.remaining_cents);
   $('statPaid').textContent = money(totals.paid_cents);
   $('statOriginal').textContent = money(totals.original_cents);
   $('statPeople').textContent = totals.debtors_count;
   const pct = totals.original_cents ? Math.round((totals.paid_cents / totals.original_cents) * 100) : 0;
   $('statPaidPct').textContent = `${pct}% do valor total`;
+  $('overallProgressBar').style.width = `${Math.max(0, Math.min(100, pct))}%`;
+  $('overallProgressLabel').textContent = `${pct}% do valor total já recebido`;
 
   $('debtorCards').innerHTML = debtors.length ? debtors.map(d => {
     const pct = percentPaid(d);
@@ -90,6 +106,7 @@ function renderDashboard() {
       <div class="balance-value">${money(d.remaining_cents)}</div>
       <div class="progress"><span style="width:${pct}%"></span></div>
       <div class="progress-meta"><span>${money(d.paid_cents)} recebido</span><span>${pct}% pago</span></div>
+      <div class="card-footer"><span>${d.payments_count} pagamento(s)</span><span class="card-open">Abrir ficha →</span></div>
     </article>`;
   }).join('') : `<div class="empty-state">Nenhuma pessoa cadastrada.</div>`;
 
@@ -101,7 +118,7 @@ function renderDashboard() {
 function transactionRow(p, detailed = false) {
   const hasReceipt = !!p.receipt_original_name;
   return `<div class="transaction-row">
-    <div class="tx-icon">↓</div>
+    <div class="tx-icon">R$</div>
     <div class="tx-main">
       <strong>${escapeHtml(p.debtor_name || currentDebtor?.debtor?.name || 'Pagamento')}</strong>
       <span>${formatDate(p.payment_date)}${p.method ? ` • ${escapeHtml(p.method)}` : ''}${p.note ? ` • ${escapeHtml(p.note)}` : ''}</span>
@@ -145,10 +162,28 @@ async function loadReceipts() {
   document.querySelectorAll('[data-preview-receipt]').forEach(el => el.addEventListener('click', () => previewReceipt(el.dataset.previewReceipt, el.dataset.mime)));
 }
 
+async function loadAccount() {
+  try {
+    const account = await api('/api/account');
+    $('accountDisplayName').textContent = account.username;
+    $('accountCurrentUsername').textContent = account.username;
+    $('accountLastLogin').textContent = formatDateTime(account.lastLoginAt);
+    $('accountPasswordChanged').textContent = formatDateTime(account.passwordChangedAt);
+    $('newUsername').value = account.username;
+    $('accountSidebarName').textContent = account.username;
+    if (sessionData) sessionData.user = account.username;
+  } catch (err) {
+    toast(err.message);
+  }
+}
+
 async function openPerson(id) {
   currentDebtor = await api(`/api/debtors/${id}`);
   const d = currentDebtor.debtor;
   $('personName').textContent = d.name;
+  $('personAvatar').textContent = initials(d.name);
+  $('personStatus').textContent = d.remaining_cents <= 0 ? 'QUITADO' : 'PENDENTE';
+  $('personStatus').classList.toggle('paid', d.remaining_cents <= 0);
   $('personNotes').textContent = d.notes || 'Sem observações cadastradas.';
   $('personOriginal').textContent = money(d.original_amount_cents);
   $('personPaid').textContent = money(d.paid_cents);
@@ -219,11 +254,19 @@ function switchView(view, personName = '') {
   currentView = view;
   document.querySelectorAll('.view-section').forEach(x => x.classList.add('hidden'));
   document.querySelectorAll('.nav-item[data-view]').forEach(x => x.classList.toggle('active', x.dataset.view === view));
-  const map = { dashboard: ['RESUMO FINANCEIRO','Visão geral'], people: ['CADASTROS','Pessoas'], receipts: ['ARQUIVOS','Comprovantes'], person: ['DETALHES', personName || 'Pessoa'] };
+  const map = {
+    dashboard: ['RESUMO FINANCEIRO','Visão geral'],
+    people: ['CADASTROS','Pessoas'],
+    receipts: ['ARQUIVOS','Comprovantes'],
+    account: ['CONFIGURAÇÕES','Minha conta'],
+    person: ['DETALHES', personName || 'Pessoa']
+  };
   $('viewEyebrow').textContent = map[view][0];
   $('viewTitle').textContent = map[view][1];
   $('view' + view[0].toUpperCase() + view.slice(1)).classList.remove('hidden');
+  $('newPersonBtn').classList.toggle('hidden', view === 'account');
   if (view === 'receipts') loadReceipts();
+  if (view === 'account') loadAccount();
   $('sidebar').classList.remove('open');
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -307,6 +350,85 @@ function bindEvents() {
       await openPerson(id);
     } catch (err) { $('paymentFormError').textContent = err.message; }
     finally { btn.disabled = false; btn.textContent = 'Confirmar pagamento'; }
+  });
+
+  $('usernameForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    $('usernameFormError').textContent = '';
+    const btn = $('usernameForm').querySelector('button[type="submit"]');
+    btn.disabled = true;
+    btn.textContent = 'Salvando...';
+    try {
+      const data = await api('/api/account/username', {
+        method: 'PUT',
+        body: JSON.stringify({
+          username: $('newUsername').value,
+          currentPassword: $('usernameCurrentPassword').value
+        })
+      });
+      $('usernameCurrentPassword').value = '';
+      $('accountSidebarName').textContent = data.username;
+      toast('Usuário de acesso alterado com sucesso.');
+      await loadAccount();
+    } catch (err) {
+      $('usernameFormError').textContent = err.message;
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Salvar novo usuário';
+    }
+  });
+
+  $('passwordForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    $('passwordFormError').textContent = '';
+    const newPassword = $('passwordNew').value;
+    const confirmPassword = $('passwordConfirm').value;
+    if (newPassword !== confirmPassword) {
+      $('passwordFormError').textContent = 'A confirmação da nova senha não confere.';
+      return;
+    }
+    const btn = $('passwordForm').querySelector('button[type="submit"]');
+    btn.disabled = true;
+    btn.textContent = 'Atualizando...';
+    try {
+      await api('/api/account/password', {
+        method: 'PUT',
+        body: JSON.stringify({
+          currentPassword: $('passwordCurrent').value,
+          newPassword,
+          confirmPassword
+        })
+      });
+      $('passwordForm').reset();
+      toast('Senha alterada. Outras sessões foram encerradas.');
+      await loadAccount();
+    } catch (err) {
+      $('passwordFormError').textContent = err.message;
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Atualizar senha';
+    }
+  });
+
+  $('logoutOthersForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    $('logoutOthersError').textContent = '';
+    const btn = $('logoutOthersForm').querySelector('button[type="submit"]');
+    btn.disabled = true;
+    btn.textContent = 'Encerrando...';
+    try {
+      const result = await api('/api/account/logout-others', {
+        method: 'POST',
+        body: JSON.stringify({ currentPassword: $('logoutOthersPassword').value })
+      });
+      $('logoutOthersForm').reset();
+      toast(result.closedSessions ? `${result.closedSessions} outra(s) sessão(ões) encerrada(s).` : 'Não havia outras sessões abertas.');
+    } catch (err) {
+      $('logoutOthersError').textContent = err.message;
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Encerrar outras sessões';
+    }
   });
 
   $('logoutBtn').addEventListener('click', async () => {

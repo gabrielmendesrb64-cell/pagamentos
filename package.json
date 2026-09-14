@@ -1,8 +1,8 @@
 {
   "name": "controle-dividas-pessoal",
-  "version": "1.1.0",
+  "version": "2.1.0",
   "private": true,
-  "description": "Painel privado para controle de dívidas e comprovantes de pagamento",
+  "description": "Painel privado profissional para controle de recebíveis, pagamentos, comprovantes e conta administrativa",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

@@ -3,32 +3,58 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#0b0d10">
-  <title>Controle de Dívidas • Acesso privado</title>
+  <meta name="theme-color" content="#0a0c0f">
+  <meta name="color-scheme" content="dark">
+  <title>Recebíveis • Acesso privado</title>
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body class="login-body">
   <main class="login-shell">
-    <section class="login-card">
-      <div class="brand-mark">CD</div>
-      <p class="eyebrow">PAINEL PESSOAL</p>
-      <h1>Controle de Dívidas</h1>
-      <p class="muted">Acesso privado. Entre para consultar saldos, pagamentos e comprovantes.</p>
+    <section class="login-presentation">
+      <div class="login-brand">
+        <div class="brand-mark">R</div>
+        <div><strong>Recebíveis</strong><span>Controle privado</span></div>
+      </div>
+      <div class="login-copy">
+        <span class="login-kicker">GESTÃO PESSOAL</span>
+        <h1>Seu controle financeiro, organizado e protegido.</h1>
+        <p>Acompanhe valores a receber, registre cada pagamento e mantenha os comprovantes vinculados ao histórico certo.</p>
+        <div class="login-features">
+          <div><span>✓</span><p><strong>Saldos automáticos</strong><small>O restante é recalculado a cada pagamento.</small></p></div>
+          <div><span>✓</span><p><strong>Histórico completo</strong><small>Cada recebimento fica registrado.</small></p></div>
+          <div><span>✓</span><p><strong>Comprovantes privados</strong><small>Imagens e PDFs protegidos pelo login.</small></p></div>
+        </div>
+      </div>
+      <div class="login-foot">Painel pessoal • acesso restrito</div>
+    </section>
 
-      <form id="loginForm" class="stack-lg" autocomplete="on">
-        <label class="field">
-          <span>Usuário</span>
-          <input id="username" name="username" autocomplete="username" required autofocus>
-        </label>
-        <label class="field">
-          <span>Senha</span>
-          <input id="password" name="password" type="password" autocomplete="current-password" required>
-        </label>
-        <button class="btn btn-primary btn-full" type="submit">Entrar no painel</button>
-        <p id="loginError" class="form-error" aria-live="polite"></p>
-      </form>
+    <section class="login-form-side">
+      <div class="login-card">
+        <div class="login-lock">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10V8a5 5 0 0 1 10 0v2m-9 0h8a2 2 0 0 1 2 2v7H6v-7a2 2 0 0 1 2-2Z"/></svg>
+        </div>
+        <p class="eyebrow accent">ACESSO SEGURO</p>
+        <h2>Entrar no painel</h2>
+        <p class="muted">Use suas credenciais para acessar seus dados.</p>
 
-      <div class="privacy-note">🔒 Nenhuma informação financeira fica visível sem login.</div>
+        <form id="loginForm" class="stack-lg" autocomplete="on">
+          <label class="field">
+            <span>Usuário</span>
+            <input id="username" name="username" autocomplete="username" placeholder="Seu usuário" required autofocus>
+          </label>
+          <label class="field">
+            <span>Senha</span>
+            <input id="password" name="password" type="password" autocomplete="current-password" placeholder="Sua senha" required>
+          </label>
+          <button class="btn btn-primary btn-full login-submit" type="submit">Entrar no painel</button>
+          <p id="loginError" class="form-error" aria-live="polite"></p>
+        </form>
+
+        <div class="privacy-note">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v5c0 4.6 2.9 8.7 7 10 4.1-1.3 7-5.4 7-10V6l-7-3Z"/></svg>
+          <span>Este painel não possui cadastro público. Depois de entrar, você pode alterar usuário e senha em “Minha conta”.</span>
+        </div>
+      </div>
     </section>
   </main>
   <script src="/login.js"></script>

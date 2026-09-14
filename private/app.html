@@ -3,115 +3,306 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#0b0d10">
-  <title>Controle de Dívidas</title>
+  <meta name="theme-color" content="#0a0c0f">
+  <meta name="color-scheme" content="dark">
+  <title>Recebíveis • Controle Privado</title>
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
   <div class="app-shell">
     <aside class="sidebar" id="sidebar">
-      <div>
+      <div class="sidebar-main">
         <div class="sidebar-brand">
-          <div class="brand-mark small">CD</div>
-          <div><strong>Controle</strong><span>Dívidas pessoais</span></div>
+          <div class="brand-mark small" aria-hidden="true">R</div>
+          <div class="brand-copy">
+            <strong>Recebíveis</strong>
+            <span>Controle privado</span>
+          </div>
         </div>
+
+        <div class="sidebar-label">MENU</div>
         <nav class="nav-list" aria-label="Navegação principal">
-          <button class="nav-item active" data-view="dashboard"><span>⌂</span> Visão geral</button>
-          <button class="nav-item" data-view="people"><span>👥</span> Pessoas</button>
-          <button class="nav-item" data-view="receipts"><span>▣</span> Comprovantes</button>
+          <button class="nav-item active" data-view="dashboard">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13h6V4H4v9Zm0 7h6v-5H4v5Zm10 0h6V11h-6v9Zm0-16v5h6V4h-6Z"/></svg>
+            <span>Visão geral</span>
+          </button>
+          <button class="nav-item" data-view="people">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM8 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm8 1c-2.67 0-8 1.34-8 4v3h16v-3c0-2.66-5.33-4-8-4ZM8 14c-3.11 0-8 1.56-8 4.67V20h6v-3c0-1.18.46-2.16 1.2-2.96C7.47 14.02 7.74 14 8 14Z"/></svg>
+            <span>Pessoas</span>
+          </button>
+          <button class="nav-item" data-view="receipts">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 2h8l5 5v15H7a3 3 0 0 1-3-3V5a3 3 0 0 1 3-3Zm7 2v5h5M8 13h8M8 17h6"/></svg>
+            <span>Comprovantes</span>
+          </button>
+          <button class="nav-item" data-view="account">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm7 9a7 7 0 0 0-14 0M19 8v4m2-2h-4"/></svg>
+            <span>Minha conta</span>
+          </button>
         </nav>
       </div>
+
       <div class="sidebar-footer">
-        <button class="nav-item" id="backupBtn"><span>⇩</span> Fazer backup</button>
-        <button class="nav-item danger-text" id="logoutBtn"><span>↪</span> Sair</button>
+        <div class="security-card">
+          <div class="security-icon">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v5c0 4.6 2.9 8.7 7 10 4.1-1.3 7-5.4 7-10V6l-7-3Zm0 4a3 3 0 0 1 3 3v1h1v5H8v-5h1v-1a3 3 0 0 1 3-3Zm0 2a1 1 0 0 0-1 1v1h2v-1a1 1 0 0 0-1-1Z"/></svg>
+          </div>
+          <div><strong id="accountSidebarName">Área protegida</strong><span>Sessão privada ativa</span></div>
+        </div>
+        <button class="nav-item" id="backupBtn">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 19h14"/></svg>
+          <span>Fazer backup</span>
+        </button>
+        <button class="nav-item danger-text" id="logoutBtn">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 5H5v14h5M14 8l4 4-4 4m4-4H9"/></svg>
+          <span>Sair</span>
+        </button>
       </div>
     </aside>
 
     <main class="main-content">
       <header class="topbar">
-        <button class="icon-btn mobile-only" id="menuBtn" aria-label="Abrir menu">☰</button>
-        <div>
-          <p class="eyebrow" id="viewEyebrow">RESUMO FINANCEIRO</p>
-          <h1 id="viewTitle">Visão geral</h1>
+        <div class="topbar-left">
+          <button class="icon-btn mobile-only" id="menuBtn" aria-label="Abrir menu">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+          </button>
+          <div>
+            <p class="eyebrow" id="viewEyebrow">RESUMO FINANCEIRO</p>
+            <h1 id="viewTitle">Visão geral</h1>
+          </div>
         </div>
-        <button class="btn btn-primary" id="newPersonBtn">+ Nova pessoa</button>
+        <div class="topbar-actions">
+          <div class="private-badge"><span></span> Ambiente privado</div>
+          <button class="btn btn-primary" id="newPersonBtn">
+            <span class="btn-plus">+</span> Nova pessoa
+          </button>
+        </div>
       </header>
 
       <section id="viewDashboard" class="view-section">
+        <section class="overview-hero">
+          <div class="overview-copy">
+            <p class="eyebrow accent">CARTEIRA DE RECEBÍVEIS</p>
+            <h2>Controle tudo o que você tem a receber.</h2>
+            <p>Valores, pagamentos e comprovantes organizados em um único painel privado.</p>
+          </div>
+          <div class="overview-total">
+            <span>Saldo pendente</span>
+            <strong id="heroRemaining">R$ 0,00</strong>
+            <div class="overall-progress"><span id="overallProgressBar"></span></div>
+            <small id="overallProgressLabel">0% já recebido</small>
+          </div>
+        </section>
+
         <div class="stats-grid">
           <article class="stat-card featured">
-            <span class="stat-label">Total a receber</span>
+            <div class="stat-head"><span class="stat-icon pending">R$</span><span class="stat-label">Total a receber</span></div>
             <strong id="statRemaining">R$ 0,00</strong>
             <small>Saldo pendente somado</small>
           </article>
           <article class="stat-card">
-            <span class="stat-label">Total já recebido</span>
+            <div class="stat-head"><span class="stat-icon received">✓</span><span class="stat-label">Total recebido</span></div>
             <strong id="statPaid">R$ 0,00</strong>
             <small id="statPaidPct">0% do valor total</small>
           </article>
           <article class="stat-card">
-            <span class="stat-label">Valor original</span>
+            <div class="stat-head"><span class="stat-icon neutral">∑</span><span class="stat-label">Valor original</span></div>
             <strong id="statOriginal">R$ 0,00</strong>
             <small>Somando todas as dívidas</small>
           </article>
           <article class="stat-card">
-            <span class="stat-label">Pessoas</span>
+            <div class="stat-head"><span class="stat-icon people">#</span><span class="stat-label">Pessoas</span></div>
             <strong id="statPeople">0</strong>
-            <small>Cadastros ativos</small>
+            <small>Cadastros acompanhados</small>
           </article>
         </div>
 
         <div class="section-head">
-          <div><p class="eyebrow">ACOMPANHAMENTO</p><h2>Quem ainda deve</h2></div>
+          <div>
+            <p class="eyebrow">ACOMPANHAMENTO</p>
+            <h2>Contas em aberto</h2>
+            <p class="section-description">Acompanhe o saldo e o progresso de cada pessoa.</p>
+          </div>
         </div>
         <div id="debtorCards" class="debtor-grid"></div>
 
         <div class="panel recent-panel">
           <div class="section-head compact">
-            <div><p class="eyebrow">HISTÓRICO</p><h2>Pagamentos recentes</h2></div>
+            <div>
+              <p class="eyebrow">MOVIMENTAÇÕES</p>
+              <h2>Pagamentos recentes</h2>
+            </div>
+            <span class="panel-tag">EXTRATO</span>
           </div>
           <div id="recentList" class="transaction-list"></div>
         </div>
       </section>
 
       <section id="viewPeople" class="view-section hidden">
-        <div class="panel">
-          <div class="section-head compact">
-            <div><p class="eyebrow">CADASTROS</p><h2>Todas as pessoas</h2></div>
-            <div class="search-wrap"><input id="peopleSearch" placeholder="Buscar por nome..."></div>
+        <div class="panel table-panel">
+          <div class="section-head compact people-head">
+            <div>
+              <p class="eyebrow">CADASTROS</p>
+              <h2>Pessoas e saldos</h2>
+              <p class="section-description">Consulte rapidamente valores originais, pagos e pendentes.</p>
+            </div>
+            <label class="search-wrap">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m21 21-4.35-4.35M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z"/></svg>
+              <input id="peopleSearch" placeholder="Buscar por nome...">
+            </label>
+          </div>
+          <div class="table-header" aria-hidden="true">
+            <span>Pessoa</span><span>Valor original</span><span>Recebido</span><span>Restante</span><span></span>
           </div>
           <div id="peopleTable" class="people-table"></div>
         </div>
       </section>
 
       <section id="viewReceipts" class="view-section hidden">
-        <div class="section-head">
-          <div><p class="eyebrow">ARQUIVOS</p><h2>Comprovantes de pagamento</h2></div>
+        <div class="section-head receipts-head">
+          <div>
+            <p class="eyebrow">DOCUMENTOS</p>
+            <h2>Comprovantes de pagamento</h2>
+            <p class="section-description">Arquivos vinculados aos pagamentos registrados.</p>
+          </div>
+          <span class="secure-file-badge">Arquivos privados</span>
         </div>
         <div id="receiptGrid" class="receipt-grid"></div>
       </section>
 
-      <section id="viewPerson" class="view-section hidden">
-        <button class="back-link" id="backBtn">← Voltar</button>
-        <div class="person-hero panel">
+      <section id="viewAccount" class="view-section hidden">
+        <div class="account-hero panel">
+          <div class="account-avatar" aria-hidden="true">A</div>
+          <div class="account-hero-copy">
+            <p class="eyebrow accent">CONTA ADMINISTRATIVA</p>
+            <h2 id="accountDisplayName">Administrador</h2>
+            <p>Essa é a única conta com acesso ao painel. Usuário e senha podem ser alterados aqui com confirmação da senha atual.</p>
+          </div>
+          <span class="status-pill paid">ATIVA</span>
+        </div>
+
+        <div class="account-meta-grid">
+          <article class="account-meta-card">
+            <span>Usuário atual</span>
+            <strong id="accountCurrentUsername">—</strong>
+            <small>Usado na tela de login</small>
+          </article>
+          <article class="account-meta-card">
+            <span>Último acesso</span>
+            <strong id="accountLastLogin">—</strong>
+            <small>Registro da última autenticação</small>
+          </article>
+          <article class="account-meta-card">
+            <span>Senha atualizada</span>
+            <strong id="accountPasswordChanged">—</strong>
+            <small>Última alteração de senha</small>
+          </article>
+        </div>
+
+        <div class="account-settings-grid">
+          <div class="panel account-setting-card">
+            <div class="section-head compact">
+              <div>
+                <p class="eyebrow">IDENTIFICAÇÃO</p>
+                <h2>Alterar usuário</h2>
+                <p class="section-description">Troque o nome usado para entrar no painel.</p>
+              </div>
+              <span class="panel-tag">LOGIN</span>
+            </div>
+            <form id="usernameForm" class="stack-lg account-form" autocomplete="off">
+              <label class="field">
+                <span>Novo usuário</span>
+                <input id="newUsername" name="username" minlength="3" maxlength="32" autocomplete="off" placeholder="Ex.: gabriel" required>
+                <small>Use letras, números, ponto, _ ou -.</small>
+              </label>
+              <label class="field">
+                <span>Senha atual para confirmar</span>
+                <input id="usernameCurrentPassword" name="currentPassword" type="password" autocomplete="current-password" placeholder="Digite sua senha atual" required>
+              </label>
+              <p class="form-error" id="usernameFormError"></p>
+              <button class="btn btn-primary" type="submit">Salvar novo usuário</button>
+            </form>
+          </div>
+
+          <div class="panel account-setting-card">
+            <div class="section-head compact">
+              <div>
+                <p class="eyebrow">SEGURANÇA</p>
+                <h2>Alterar senha</h2>
+                <p class="section-description">Ao trocar a senha, outras sessões abertas serão encerradas.</p>
+              </div>
+              <span class="panel-tag">PROTEÇÃO</span>
+            </div>
+            <form id="passwordForm" class="stack-lg account-form" autocomplete="off">
+              <label class="field">
+                <span>Senha atual</span>
+                <input id="passwordCurrent" name="currentPassword" type="password" autocomplete="current-password" placeholder="Sua senha atual" required>
+              </label>
+              <div class="form-grid">
+                <label class="field">
+                  <span>Nova senha</span>
+                  <input id="passwordNew" name="newPassword" type="password" minlength="8" maxlength="128" autocomplete="new-password" placeholder="Mínimo 8 caracteres" required>
+                </label>
+                <label class="field">
+                  <span>Confirmar nova senha</span>
+                  <input id="passwordConfirm" name="confirmPassword" type="password" minlength="8" maxlength="128" autocomplete="new-password" placeholder="Repita a nova senha" required>
+                </label>
+              </div>
+              <div class="password-note">
+                <span class="security-dot"></span>
+                <p>Evite reutilizar a mesma senha de e-mail, banco ou redes sociais.</p>
+              </div>
+              <p class="form-error" id="passwordFormError"></p>
+              <button class="btn btn-primary" type="submit">Atualizar senha</button>
+            </form>
+          </div>
+        </div>
+
+        <div class="panel account-session-panel">
           <div>
-            <p class="eyebrow">DETALHES DA DÍVIDA</p>
-            <h2 id="personName">Pessoa</h2>
-            <p class="muted" id="personNotes"></p>
+            <p class="eyebrow">SESSÕES</p>
+            <h2>Encerrar outros acessos</h2>
+            <p class="section-description">Se você entrou em outro computador ou celular, encerre todas as outras sessões mantendo apenas este dispositivo.</p>
+          </div>
+          <form id="logoutOthersForm" class="session-inline-form" autocomplete="off">
+            <input id="logoutOthersPassword" type="password" autocomplete="current-password" placeholder="Senha atual" required>
+            <button class="btn btn-secondary" type="submit">Encerrar outras sessões</button>
+          </form>
+          <p class="form-error" id="logoutOthersError"></p>
+        </div>
+      </section>
+
+      <section id="viewPerson" class="view-section hidden">
+        <button class="back-link" id="backBtn">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+          Voltar à visão geral
+        </button>
+        <div class="person-hero panel">
+          <div class="person-identity">
+            <div class="person-avatar-large" id="personAvatar">P</div>
+            <div>
+              <div class="person-title-line">
+                <h2 id="personName">Pessoa</h2>
+                <span class="status-pill" id="personStatus">PENDENTE</span>
+              </div>
+              <p class="muted" id="personNotes"></p>
+            </div>
           </div>
           <div class="hero-actions">
-            <button class="btn btn-secondary" id="editPersonBtn">Editar</button>
-            <button class="btn btn-primary" id="addPaymentBtn">+ Registrar pagamento</button>
+            <button class="btn btn-secondary" id="editPersonBtn">Editar cadastro</button>
+            <button class="btn btn-primary" id="addPaymentBtn"><span class="btn-plus">+</span> Registrar pagamento</button>
           </div>
         </div>
         <div class="stats-grid person-stats">
-          <article class="stat-card"><span class="stat-label">Dívida original</span><strong id="personOriginal"></strong></article>
-          <article class="stat-card"><span class="stat-label">Já pago</span><strong id="personPaid"></strong></article>
-          <article class="stat-card featured"><span class="stat-label">Saldo restante</span><strong id="personRemaining"></strong></article>
-          <article class="stat-card"><span class="stat-label">Progresso</span><strong id="personProgress"></strong></article>
+          <article class="stat-card"><span class="stat-label">Dívida original</span><strong id="personOriginal"></strong><small>Valor inicial cadastrado</small></article>
+          <article class="stat-card"><span class="stat-label">Total recebido</span><strong id="personPaid"></strong><small>Pagamentos confirmados</small></article>
+          <article class="stat-card featured"><span class="stat-label">Saldo restante</span><strong id="personRemaining"></strong><small>Valor ainda pendente</small></article>
+          <article class="stat-card"><span class="stat-label">Progresso</span><strong id="personProgress"></strong><small>Percentual quitado</small></article>
         </div>
         <div class="panel">
-          <div class="section-head compact"><div><p class="eyebrow">MOVIMENTAÇÕES</p><h2>Histórico de pagamentos</h2></div></div>
+          <div class="section-head compact">
+            <div><p class="eyebrow">EXTRATO INDIVIDUAL</p><h2>Histórico de pagamentos</h2></div>
+            <span class="panel-tag">CRONOLÓGICO</span>
+          </div>
           <div id="paymentHistory" class="transaction-list"></div>
         </div>
       </section>
@@ -120,36 +311,42 @@
 
   <div class="modal-backdrop hidden" id="personModal">
     <div class="modal-card">
-      <button class="modal-close" data-close="personModal">×</button>
+      <button class="modal-close" data-close="personModal" aria-label="Fechar">×</button>
+      <div class="modal-icon">P</div>
       <p class="eyebrow">CADASTRO</p>
       <h2 id="personModalTitle">Nova pessoa</h2>
+      <p class="modal-description">Informe os dados principais da dívida.</p>
       <form id="personForm" class="stack-lg">
         <input type="hidden" id="personId">
-        <label class="field"><span>Nome</span><input id="personFormName" maxlength="100" required></label>
-        <label class="field"><span>Valor original da dívida</span><div class="money-input"><span>R$</span><input id="personFormAmount" type="number" min="0.01" step="0.01" required></div></label>
-        <label class="field"><span>Observações</span><textarea id="personFormNotes" rows="4" maxlength="1500" placeholder="Ex.: motivo da dívida, acordo, vencimento..."></textarea></label>
+        <label class="field"><span>Nome</span><input id="personFormName" maxlength="100" placeholder="Nome da pessoa" required></label>
+        <label class="field"><span>Valor original da dívida</span><div class="money-input"><span>R$</span><input id="personFormAmount" type="number" min="0.01" step="0.01" placeholder="0,00" required></div></label>
+        <label class="field"><span>Observações</span><textarea id="personFormNotes" rows="4" maxlength="1500" placeholder="Motivo, acordo, vencimento ou alguma observação importante..."></textarea></label>
         <p class="form-error" id="personFormError"></p>
-        <button class="btn btn-primary btn-full" type="submit">Salvar</button>
+        <button class="btn btn-primary btn-full" type="submit">Salvar cadastro</button>
       </form>
     </div>
   </div>
 
   <div class="modal-backdrop hidden" id="paymentModal">
     <div class="modal-card wide">
-      <button class="modal-close" data-close="paymentModal">×</button>
+      <button class="modal-close" data-close="paymentModal" aria-label="Fechar">×</button>
+      <div class="modal-icon payment">R$</div>
       <p class="eyebrow">NOVO RECEBIMENTO</p>
       <h2>Registrar pagamento</h2>
-      <p class="muted" id="paymentBalanceHint"></p>
+      <p class="modal-description" id="paymentBalanceHint"></p>
       <form id="paymentForm" class="stack-lg" enctype="multipart/form-data">
-        <label class="field"><span>Valor recebido</span><div class="money-input"><span>R$</span><input id="paymentAmount" name="amount" type="number" min="0.01" step="0.01" required></div></label>
+        <label class="field"><span>Valor recebido</span><div class="money-input"><span>R$</span><input id="paymentAmount" name="amount" type="number" min="0.01" step="0.01" placeholder="0,00" required></div></label>
         <div class="form-grid">
           <label class="field"><span>Data do pagamento</span><input id="paymentDate" name="paymentDate" type="date"></label>
           <label class="field"><span>Forma de pagamento</span><select id="paymentMethod" name="method"><option value="PIX">PIX</option><option value="Dinheiro">Dinheiro</option><option value="Transferência">Transferência</option><option value="Outro">Outro</option></select></label>
         </div>
-        <label class="field"><span>Observação</span><textarea id="paymentNote" name="note" rows="3" maxlength="1000" placeholder="Opcional"></textarea></label>
+        <label class="field"><span>Observação</span><textarea id="paymentNote" name="note" rows="3" maxlength="1000" placeholder="Ex.: parcela 2 de 5, pagamento combinado..."></textarea></label>
         <label class="upload-box" id="uploadBox">
           <input id="receiptInput" name="receipt" type="file" accept="image/jpeg,image/png,image/webp,application/pdf">
-          <strong>📎 Anexar comprovante</strong>
+          <span class="upload-icon">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4m0 0L8 8m4-4 4 4M5 14v5h14v-5"/></svg>
+          </span>
+          <strong>Anexar comprovante</strong>
           <span id="receiptFileName">JPG, PNG, WEBP ou PDF • até 8 MB</span>
         </label>
         <p class="form-error" id="paymentFormError"></p>
@@ -160,7 +357,7 @@
 
   <div class="modal-backdrop hidden" id="receiptModal">
     <div class="modal-card receipt-modal-card">
-      <button class="modal-close" data-close="receiptModal">×</button>
+      <button class="modal-close" data-close="receiptModal" aria-label="Fechar">×</button>
       <div id="receiptPreview"></div>
     </div>
   </div>

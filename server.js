@@ -20,10 +20,6 @@ const DATA_DIR = path.resolve(process.env.DATA_DIR || './data');
 const UPLOAD_DIR = path.join(DATA_DIR, 'uploads');
 const DB_PATH = path.join(DATA_DIR, 'controle-dividas.db');
 
-if (!ADMIN_PASSWORD || ADMIN_PASSWORD.length < 8) {
-  console.error('ERRO: defina ADMIN_PASSWORD com pelo menos 8 caracteres no arquivo .env');
-  process.exit(1);
-}
 if (!SESSION_SECRET || SESSION_SECRET.length < 24) {
   console.error('ERRO: defina SESSION_SECRET com pelo menos 24 caracteres no arquivo .env');
   process.exit(1);
@@ -33,6 +29,40 @@ fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 const db = new Database(DB_PATH);
 db.pragma('journal_mode = WAL');
 db.pragma('foreign_keys = ON');
+
+function normalizeUsername(value) {
+  return String(value || '').trim();
+}
+
+function validateUsername(value) {
+  const username = normalizeUsername(value);
+  return username.length >= 3 && username.length <= 32 && /^[A-Za-z0-9._-]+$/.test(username);
+}
+
+function hashPassword(password, salt = crypto.randomBytes(16).toString('hex')) {
+  const hash = crypto.scryptSync(String(password), salt, 64).toString('hex');
+  return { salt, hash };
+}
+
+function verifyPassword(password, account) {
+  if (!account?.password_hash || !account?.password_salt) return false;
+  try {
+    const candidate = crypto.scryptSync(String(password || ''), account.password_salt, 64);
+    const expected = Buffer.from(account.password_hash, 'hex');
+    return candidate.length === expected.length && crypto.timingSafeEqual(candidate, expected);
+  } catch (_err) {
+    return false;
+  }
+}
+
+function getAdminAccount() {
+  return db.prepare(`
+    SELECT id, username, password_salt, password_hash, created_at, updated_at,
+           password_changed_at, last_login_at
+    FROM admin_account
+    WHERE id = 1
+  `).get();
+}
 
 function migrate() {
   db.exec(`
@@ -59,6 +89,17 @@ function migrate() {
     );
 
     CREATE INDEX IF NOT EXISTS idx_payments_debtor ON payments(debtor_id);
+
+    CREATE TABLE IF NOT EXISTS admin_account (
+      id INTEGER PRIMARY KEY CHECK (id = 1),
+      username TEXT NOT NULL UNIQUE,
+      password_salt TEXT NOT NULL,
+      password_hash TEXT NOT NULL,
+      created_at TEXT NOT NULL DEFAULT (datetime('now')),
+      updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+      password_changed_at TEXT NOT NULL DEFAULT (datetime('now')),
+      last_login_at TEXT
+    );
   `);
 
   const count = db.prepare('SELECT COUNT(*) AS c FROM debtors').get().c;
@@ -77,6 +118,24 @@ function migrate() {
       insertPayment.run(paulo.lastInsertRowid, 35000, 'Pagamento anterior informado no cadastro inicial.');
     });
     seed();
+  }
+
+  const existingAccount = db.prepare('SELECT id FROM admin_account WHERE id = 1').get();
+  if (!existingAccount) {
+    const initialUsername = normalizeUsername(ADMIN_USER || 'admin');
+    if (!validateUsername(initialUsername)) {
+      console.error('ERRO: ADMIN_USER deve ter entre 3 e 32 caracteres e usar apenas letras, números, ponto, _ ou -.');
+      process.exit(1);
+    }
+    if (!ADMIN_PASSWORD || ADMIN_PASSWORD.length < 8) {
+      console.error('ERRO: no primeiro acesso, defina ADMIN_PASSWORD com pelo menos 8 caracteres.');
+      process.exit(1);
+    }
+    const { salt, hash } = hashPassword(ADMIN_PASSWORD);
+    db.prepare(`
+      INSERT INTO admin_account (id, username, password_salt, password_hash)
+      VALUES (1, ?, ?, ?)
+    `).run(initialUsername, salt, hash);
   }
 }
 migrate();
@@ -217,18 +276,26 @@ const upload = multer({
   }
 });
 
+app.get('/health', (_req, res) => res.status(200).json({ ok: true }));
+
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'private', req.session?.authenticated ? 'app.html' : 'login.html'));
 });
 
 app.post('/api/login', loginLimiter, (req, res) => {
   const { username, password } = req.body || {};
-  if (!safeEqual(username || '', ADMIN_USER) || !safeEqual(password || '', ADMIN_PASSWORD)) {
+  const account = getAdminAccount();
+  if (!account || !safeEqual(username || '', account.username) || !verifyPassword(password, account)) {
     return res.status(401).json({ error: 'Usuário ou senha incorretos.' });
   }
+
+  db.prepare(`UPDATE admin_account SET last_login_at = datetime('now') WHERE id = 1`).run();
+
   req.session.regenerate((err) => {
     if (err) return res.status(500).json({ error: 'Não foi possível iniciar a sessão.' });
     req.session.authenticated = true;
+    req.session.accountId = account.id;
+    req.session.accountUsername = account.username;
     req.session.csrfToken = crypto.randomBytes(32).toString('hex');
     req.session.save(() => res.json({ ok: true }));
   });
@@ -236,7 +303,89 @@ app.post('/api/login', loginLimiter, (req, res) => {
 
 app.get('/api/session', requireAuth, (req, res) => {
   if (!req.session.csrfToken) req.session.csrfToken = crypto.randomBytes(32).toString('hex');
-  res.json({ authenticated: true, csrfToken: req.session.csrfToken, user: ADMIN_USER });
+  const account = getAdminAccount();
+  if (!account) return res.status(401).json({ error: 'Conta administrativa não encontrada.' });
+  res.json({ authenticated: true, csrfToken: req.session.csrfToken, user: account.username });
+});
+
+app.get('/api/account', requireAuth, (_req, res) => {
+  const account = getAdminAccount();
+  if (!account) return res.status(404).json({ error: 'Conta não encontrada.' });
+  res.json({
+    username: account.username,
+    createdAt: account.created_at,
+    updatedAt: account.updated_at,
+    passwordChangedAt: account.password_changed_at,
+    lastLoginAt: account.last_login_at
+  });
+});
+
+app.put('/api/account/username', requireAuth, requireCsrf, (req, res) => {
+  const account = getAdminAccount();
+  const currentPassword = String(req.body?.currentPassword || '');
+  const username = normalizeUsername(req.body?.username);
+
+  if (!verifyPassword(currentPassword, account)) {
+    return res.status(403).json({ error: 'A senha atual está incorreta.' });
+  }
+  if (!validateUsername(username)) {
+    return res.status(400).json({ error: 'O usuário deve ter de 3 a 32 caracteres e usar apenas letras, números, ponto, _ ou -.' });
+  }
+  if (safeEqual(username, account.username)) {
+    return res.status(400).json({ error: 'Informe um usuário diferente do atual.' });
+  }
+
+  db.prepare(`
+    UPDATE admin_account
+    SET username = ?, updated_at = datetime('now')
+    WHERE id = 1
+  `).run(username);
+
+  req.session.accountUsername = username;
+  req.session.save(() => res.json({ ok: true, username }));
+});
+
+app.put('/api/account/password', requireAuth, requireCsrf, (req, res) => {
+  const account = getAdminAccount();
+  const currentPassword = String(req.body?.currentPassword || '');
+  const newPassword = String(req.body?.newPassword || '');
+  const confirmPassword = String(req.body?.confirmPassword || '');
+
+  if (!verifyPassword(currentPassword, account)) {
+    return res.status(403).json({ error: 'A senha atual está incorreta.' });
+  }
+  if (newPassword.length < 8 || newPassword.length > 128) {
+    return res.status(400).json({ error: 'A nova senha deve ter entre 8 e 128 caracteres.' });
+  }
+  if (newPassword !== confirmPassword) {
+    return res.status(400).json({ error: 'A confirmação da nova senha não confere.' });
+  }
+  if (verifyPassword(newPassword, account)) {
+    return res.status(400).json({ error: 'A nova senha precisa ser diferente da senha atual.' });
+  }
+
+  const { salt, hash } = hashPassword(newPassword);
+  const updatePassword = db.transaction(() => {
+    db.prepare(`
+      UPDATE admin_account
+      SET password_salt = ?, password_hash = ?, password_changed_at = datetime('now'), updated_at = datetime('now')
+      WHERE id = 1
+    `).run(salt, hash);
+    db.prepare('DELETE FROM sessions WHERE sid <> ?').run(req.sessionID);
+  });
+  updatePassword();
+
+  res.json({ ok: true });
+});
+
+app.post('/api/account/logout-others', requireAuth, requireCsrf, (req, res) => {
+  const account = getAdminAccount();
+  const currentPassword = String(req.body?.currentPassword || '');
+  if (!verifyPassword(currentPassword, account)) {
+    return res.status(403).json({ error: 'A senha atual está incorreta.' });
+  }
+  const result = db.prepare('DELETE FROM sessions WHERE sid <> ?').run(req.sessionID);
+  res.json({ ok: true, closedSessions: result.changes });
 });
 
 app.post('/api/logout', requireAuth, requireCsrf, (req, res) => {

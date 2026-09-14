@@ -1,75 +1,68 @@
-# Controle de Dívidas — versão reajustada para Render
+# Recebíveis — Controle Privado
 
-Painel pessoal privado para registrar dívidas, pagamentos parciais e comprovantes.
+Painel pessoal e privado para controlar valores a receber, pagamentos parciais e comprovantes.
 
 ## Dados iniciais
 
-- Vinicius: R$ 29.000,00 — saldo R$ 29.000,00.
-- Guilherme: R$ 13.000,00 — já pagou R$ 1.000,00 — saldo R$ 12.000,00.
-- Paulo: R$ 800,00 — já pagou R$ 350,00 — saldo R$ 450,00.
-- Total inicial a receber: R$ 41.450,00.
+- Vinicius — dívida original: R$ 29.000,00 — saldo inicial: R$ 29.000,00
+- Guilherme — dívida original: R$ 13.000,00 — já pago: R$ 1.000,00 — saldo inicial: R$ 12.000,00
+- Paulo — dívida original: R$ 800,00 — já pago: R$ 350,00 — saldo inicial: R$ 450,00
+- Total inicial a receber: R$ 41.450,00
 
-## Correção aplicada para o Render
+## Recursos
 
-O projeto agora força **Node.js 22.16.0** em três lugares:
+- Login único e privado, sem cadastro público
+- Área **Minha conta**
+- Alteração do usuário de login pelo próprio painel
+- Alteração de senha exigindo a senha atual
+- Senha armazenada em hash com `scrypt` + salt, não em texto puro no banco
+- Ao trocar a senha, outras sessões abertas são encerradas
+- Opção manual para encerrar outros acessos
+- Dashboard profissional de recebíveis
+- Saldo calculado automaticamente
+- Pagamentos parciais e histórico individual
+- Upload de comprovantes JPG, PNG, WEBP ou PDF
+- Galeria privada de comprovantes
+- Busca por pessoa
+- Edição de cadastro
+- Exclusão de pagamento lançado incorretamente
+- Backup dos registros
+- Layout responsivo para computador e celular
+- Endpoint `/health` para verificação da hospedagem
 
-- `package.json`
-- `.node-version`
-- `render.yaml`
+## Primeiro login
 
-Isso evita o Render escolher Node 26, que foi a causa do erro de compilação do `better-sqlite3` no deploy anterior.
+No **primeiro início**, a conta administrativa é criada usando:
 
-## Configuração no Render
+- `ADMIN_USER`
+- `ADMIN_PASSWORD`
 
-No serviço Web Service, use:
+Depois disso, o usuário e a senha podem ser trocados dentro de **Minha conta**. As novas credenciais ficam salvas no banco de dados.
+
+> Se o banco de dados for apagado ou recriado, o sistema volta a criar a conta usando `ADMIN_USER` e `ADMIN_PASSWORD` do ambiente.
+
+## Render
+
+Use:
 
 **Build Command**
-
-```bash
-npm install
-```
+`npm install`
 
 **Start Command**
+`npm start`
 
-```bash
-npm start
-```
+Variáveis de ambiente:
 
-Em **Environment**, crie estas variáveis:
+- `NODE_VERSION=22.16.0`
+- `NODE_ENV=production`
+- `ADMIN_USER=admin`
+- `ADMIN_PASSWORD=SUA_SENHA_INICIAL_FORTE`
+- `SESSION_SECRET=UMA_CHAVE_GRANDE_COM_PELO_MENOS_32_CARACTERES`
 
-```text
-NODE_VERSION=22.16.0
-NODE_ENV=production
-ADMIN_USER=admin
-ADMIN_PASSWORD=SUA_SENHA_FORTE
-SESSION_SECRET=UMA_CHAVE_GRANDE_E_ALEATORIA_COM_32_OU_MAIS_CARACTERES
-```
+Depois de alterar arquivos ou a versão do Node no Render, use **Manual Deploy > Clear build cache & deploy**.
 
-Não precisa definir `PORT`; o Render fornece automaticamente.
+## Importante sobre o Render gratuito
 
-Depois faça **Manual Deploy > Clear build cache & deploy**. É importante limpar o cache para o Render não reutilizar a instalação feita com Node 26.
+O projeto usa SQLite e salva comprovantes em disco. Em hospedagens com armazenamento temporário, um novo deploy ou reinicialização pode apagar o banco e os comprovantes. Nesse caso, inclusive o usuário/senha alterados dentro de **Minha conta** voltariam aos valores iniciais das variáveis de ambiente.
 
-No começo do novo log, confira se aparece Node `22.16.0` (ou Node 22), e não Node 26.
-
-## Segurança
-
-O arquivo `.env` NÃO está incluído neste pacote. Não publique senhas no GitHub.
-
-Se você já publicou um `.env` no repositório anterior, remova-o do GitHub e troque a senha usada nele antes de colocar o serviço online.
-
-## Armazenamento no Render gratuito
-
-O site funciona no Render gratuito, porém o disco local do serviço gratuito é temporário. O SQLite e os comprovantes podem ser perdidos quando a instância for recriada/reiniciada.
-
-Para guardar dados e comprovantes de forma permanente, depois vale migrar banco e arquivos para um serviço persistente como Supabase ou outra solução de banco + storage.
-
-## Uso local
-
-Crie um arquivo `.env` copiando `.env.example` e preencha sua senha e o segredo da sessão. Depois:
-
-```bash
-npm install
-npm start
-```
-
-Abra `http://localhost:3000`.
+Para uso permanente, use armazenamento persistente ou migre banco e comprovantes para um serviço externo.
