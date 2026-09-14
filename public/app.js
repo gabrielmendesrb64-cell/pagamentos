@@ -400,8 +400,8 @@ function bindEvents() {
         })
       });
       $('passwordForm').reset();
-      toast('Senha alterada. Outras sessões foram encerradas.');
-      await loadAccount();
+      toast('Senha alterada. Entre novamente com a nova senha.');
+      setTimeout(() => { location.href = '/'; }, 900);
     } catch (err) {
       $('passwordFormError').textContent = err.message;
     } finally {

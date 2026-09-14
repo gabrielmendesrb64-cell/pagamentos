@@ -208,8 +208,11 @@ app.use(session({
 
 app.use(express.static(path.join(__dirname, 'public'), {
   etag: true,
-  maxAge: isProduction ? '1h' : 0,
-  index: false
+  maxAge: 0,
+  index: false,
+  setHeaders: (res) => {
+    res.setHeader('Cache-Control', 'no-cache, must-revalidate');
+  }
 }));
 
 const loginLimiter = rateLimit({
@@ -371,11 +374,15 @@ app.put('/api/account/password', requireAuth, requireCsrf, (req, res) => {
       SET password_salt = ?, password_hash = ?, password_changed_at = datetime('now'), updated_at = datetime('now')
       WHERE id = 1
     `).run(salt, hash);
-    db.prepare('DELETE FROM sessions WHERE sid <> ?').run(req.sessionID);
+    db.prepare('DELETE FROM sessions').run();
   });
   updatePassword();
 
-  res.json({ ok: true });
+  // A troca de senha encerra inclusive a sessão atual. Assim o usuário
+  // confirma imediatamente que a senha antiga não autentica mais.
+  req.session.destroy(() => {
+    res.json({ ok: true, reauthenticate: true });
+  });
 });
 
 app.post('/api/account/logout-others', requireAuth, requireCsrf, (req, res) => {
