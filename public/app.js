@@ -70,7 +70,7 @@ async function init() {
   try {
     sessionData = await api('/api/session');
     csrfToken = sessionData.csrfToken;
-    $('accountSidebarName').textContent = sessionData.user || 'Administrador';
+    $('accountSidebarName').textContent = 'Gabriel Mendes Correa';
     await loadDashboard();
     bindEvents();
   } catch (_e) {
@@ -94,7 +94,7 @@ function renderDashboard() {
   const pct = totals.original_cents ? Math.round((totals.paid_cents / totals.original_cents) * 100) : 0;
   $('statPaidPct').textContent = `${pct}% do valor total`;
   $('overallProgressBar').style.width = `${Math.max(0, Math.min(100, pct))}%`;
-  $('overallProgressLabel').textContent = `${pct}% do valor total já recebido`;
+  $('overallProgressLabel').textContent = `${pct}% do valor original recuperado`;
 
   $('debtorCards').innerHTML = debtors.length ? debtors.map(d => {
     const pct = percentPaid(d);
@@ -102,13 +102,13 @@ function renderDashboard() {
     return `<article class="debtor-card" data-debtor-id="${d.id}">
       <div class="debtor-top"><div class="avatar">${escapeHtml(initials(d.name))}</div><span class="status-pill ${paid ? 'paid' : ''}">${paid ? 'QUITADO' : 'PENDENTE'}</span></div>
       <h3>${escapeHtml(d.name)}</h3>
-      <div class="balance-label">Saldo restante</div>
+      <div class="balance-label">Saldo em aberto</div>
       <div class="balance-value">${money(d.remaining_cents)}</div>
       <div class="progress"><span style="width:${pct}%"></span></div>
-      <div class="progress-meta"><span>${money(d.paid_cents)} recebido</span><span>${pct}% pago</span></div>
+      <div class="progress-meta"><span>${money(d.paid_cents)} recuperado</span><span>${pct}% recebido</span></div>
       <div class="card-footer"><span>${d.payments_count} pagamento(s)</span><span class="card-open">Abrir ficha →</span></div>
     </article>`;
-  }).join('') : `<div class="empty-state">Nenhuma pessoa cadastrada.</div>`;
+  }).join('') : `<div class="empty-state">Nenhum devedor cadastrado.</div>`;
 
   $('recentList').innerHTML = recent.length ? recent.map(p => transactionRow(p, false)).join('') : `<div class="empty-state">Nenhum pagamento registrado ainda.</div>`;
 
@@ -138,11 +138,11 @@ function renderPeople(filter = '') {
   const list = dashboardData.debtors.filter(d => d.name.toLocaleLowerCase('pt-BR').includes(normalized));
   $('peopleTable').innerHTML = list.length ? list.map(d => `<div class="person-row">
     <div class="name-cell"><div class="avatar">${escapeHtml(initials(d.name))}</div><div><strong>${escapeHtml(d.name)}</strong><div class="muted" style="font-size:11px;margin-top:3px">${d.payments_count} pagamento(s)</div></div></div>
-    <div><span class="cell-label">Dívida original</span><strong>${money(d.original_amount_cents)}</strong></div>
-    <div><span class="cell-label">Já pago</span><strong>${money(d.paid_cents)}</strong></div>
-    <div><span class="cell-label">Restante</span><strong>${money(d.remaining_cents)}</strong></div>
+    <div><span class="cell-label">Crédito original</span><strong>${money(d.original_amount_cents)}</strong></div>
+    <div><span class="cell-label">Recuperado</span><strong>${money(d.paid_cents)}</strong></div>
+    <div><span class="cell-label">Saldo em aberto</span><strong>${money(d.remaining_cents)}</strong></div>
     <button class="btn btn-secondary" data-open-person="${d.id}">Abrir ficha</button>
-  </div>`).join('') : `<div class="empty-state">Nenhuma pessoa encontrada.</div>`;
+  </div>`).join('') : `<div class="empty-state">Nenhum devedor encontrado.</div>`;
   document.querySelectorAll('[data-open-person]').forEach(btn => btn.addEventListener('click', () => openPerson(btn.dataset.openPerson)));
 }
 
@@ -165,12 +165,12 @@ async function loadReceipts() {
 async function loadAccount() {
   try {
     const account = await api('/api/account');
-    $('accountDisplayName').textContent = account.username;
+    $('accountDisplayName').textContent = 'Gabriel Mendes Correa';
     $('accountCurrentUsername').textContent = account.username;
     $('accountLastLogin').textContent = formatDateTime(account.lastLoginAt);
     $('accountPasswordChanged').textContent = formatDateTime(account.passwordChangedAt);
     $('newUsername').value = account.username;
-    $('accountSidebarName').textContent = account.username;
+    $('accountSidebarName').textContent = 'Gabriel Mendes Correa';
     if (sessionData) sessionData.user = account.username;
   } catch (err) {
     toast(err.message);
@@ -255,10 +255,10 @@ function switchView(view, personName = '') {
   document.querySelectorAll('.view-section').forEach(x => x.classList.add('hidden'));
   document.querySelectorAll('.nav-item[data-view]').forEach(x => x.classList.toggle('active', x.dataset.view === view));
   const map = {
-    dashboard: ['RESUMO FINANCEIRO','Visão geral'],
-    people: ['CADASTROS','Pessoas'],
-    receipts: ['ARQUIVOS','Comprovantes'],
-    account: ['CONFIGURAÇÕES','Minha conta'],
+    dashboard: ['PAINEL FINANCEIRO PARTICULAR','Gabriel Mendes Correa'],
+    people: ['CARTEIRA DETALHADA','Devedores'],
+    receipts: ['DOCUMENTAÇÃO FINANCEIRA','Comprovantes'],
+    account: ['SEGURANÇA DE ACESSO','Minha conta'],
     person: ['DETALHES', personName || 'Pessoa']
   };
   $('viewEyebrow').textContent = map[view][0];
@@ -367,7 +367,7 @@ function bindEvents() {
         })
       });
       $('usernameCurrentPassword').value = '';
-      $('accountSidebarName').textContent = data.username;
+      $('accountSidebarName').textContent = 'Gabriel Mendes Correa';
       toast('Usuário de acesso alterado com sucesso.');
       await loadAccount();
     } catch (err) {

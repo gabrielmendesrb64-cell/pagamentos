@@ -340,3 +340,14 @@ textarea{resize:vertical;line-height:1.5}
   .account-hero>.status-pill{grid-column:auto}
   .session-inline-form{grid-template-columns:1fr}
 }
+
+
+/* Personalização Gabriel Mendes Correa - v4 */
+.sidebar-brand .brand-copy{min-width:0}
+.sidebar-brand .brand-copy strong{max-width:155px;font-size:12.5px;line-height:1.2;white-space:normal}
+.sidebar-brand .brand-copy span{font-size:9.5px}
+.brand-mark.small{font-size:10px;letter-spacing:-.02em}
+.login-brand strong{font-size:14px;line-height:1.2}
+.login-brand span{font-size:10px}
+.overview-copy .eyebrow{letter-spacing:.14em}
+@media(max-width:760px){.sidebar-brand .brand-copy strong{max-width:none}.overview-copy h2{font-size:26px}}

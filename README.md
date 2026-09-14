@@ -1,3 +1,7 @@
+# Controle de Recebíveis — Gabriel Mendes Correa
+
+Versão personalizada V4 com identidade profissional de Gabriel Mendes Correa.
+
 # Controle de Dívidas — PRO V3
 
 Painel privado para controle de recebíveis, pagamentos e comprovantes.

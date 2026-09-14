@@ -5,18 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f4f7f9">
   <meta name="color-scheme" content="light">
-  <title>Recebíveis • Controle Privado</title>
-  <link rel="stylesheet" href="/styles.css?v=3.0.0">
+  <title>Gabriel Mendes Correa • Gestão de Recebíveis</title>
+  <link rel="stylesheet" href="/styles.css?v=4.0.0">
 </head>
 <body>
   <div class="app-shell">
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-main">
         <div class="sidebar-brand">
-          <div class="brand-mark small" aria-hidden="true">R</div>
+          <div class="brand-mark small" aria-hidden="true">GM</div>
           <div class="brand-copy">
-            <strong>Recebíveis</strong>
-            <span>Controle privado</span>
+            <strong>Gabriel Mendes Correa</strong>
+            <span>Gestão de recebíveis</span>
           </div>
         </div>
 
@@ -24,11 +24,11 @@
         <nav class="nav-list" aria-label="Navegação principal">
           <button class="nav-item active" data-view="dashboard">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13h6V4H4v9Zm0 7h6v-5H4v5Zm10 0h6V11h-6v9Zm0-16v5h6V4h-6Z"/></svg>
-            <span>Visão geral</span>
+            <span>Painel financeiro</span>
           </button>
           <button class="nav-item" data-view="people">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM8 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm8 1c-2.67 0-8 1.34-8 4v3h16v-3c0-2.66-5.33-4-8-4ZM8 14c-3.11 0-8 1.56-8 4.67V20h6v-3c0-1.18.46-2.16 1.2-2.96C7.47 14.02 7.74 14 8 14Z"/></svg>
-            <span>Pessoas</span>
+            <span>Devedores</span>
           </button>
           <button class="nav-item" data-view="receipts">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 2h8l5 5v15H7a3 3 0 0 1-3-3V5a3 3 0 0 1 3-3Zm7 2v5h5M8 13h8M8 17h6"/></svg>
@@ -36,7 +36,7 @@
           </button>
           <button class="nav-item" data-view="account">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm7 9a7 7 0 0 0-14 0M19 8v4m2-2h-4"/></svg>
-            <span>Minha conta</span>
+            <span>Segurança e conta</span>
           </button>
         </nav>
       </div>
@@ -46,11 +46,11 @@
           <div class="security-icon">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v5c0 4.6 2.9 8.7 7 10 4.1-1.3 7-5.4 7-10V6l-7-3Zm0 4a3 3 0 0 1 3 3v1h1v5H8v-5h1v-1a3 3 0 0 1 3-3Zm0 2a1 1 0 0 0-1 1v1h2v-1a1 1 0 0 0-1-1Z"/></svg>
           </div>
-          <div><strong id="accountSidebarName">Área protegida</strong><span>Sessão privada ativa</span></div>
+          <div><strong id="accountSidebarName">Gabriel Mendes Correa</strong><span>Sessão autenticada</span></div>
         </div>
         <button class="nav-item" id="backupBtn">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 19h14"/></svg>
-          <span>Fazer backup</span>
+          <span>Exportar backup</span>
         </button>
         <button class="nav-item danger-text" id="logoutBtn">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 5H5v14h5M14 8l4 4-4 4m4-4H9"/></svg>
@@ -66,14 +66,14 @@
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
           </button>
           <div>
-            <p class="eyebrow" id="viewEyebrow">RESUMO FINANCEIRO</p>
-            <h1 id="viewTitle">Visão geral</h1>
+            <p class="eyebrow" id="viewEyebrow">PAINEL FINANCEIRO PARTICULAR</p>
+            <h1 id="viewTitle">Gabriel Mendes Correa</h1>
           </div>
         </div>
         <div class="topbar-actions">
-          <div class="private-badge"><span></span> Ambiente privado</div>
+          <div class="private-badge"><span></span> Acesso exclusivo</div>
           <button class="btn btn-primary" id="newPersonBtn">
-            <span class="btn-plus">+</span> Nova pessoa
+            <span class="btn-plus">+</span> Novo devedor
           </button>
         </div>
       </header>
@@ -81,46 +81,46 @@
       <section id="viewDashboard" class="view-section">
         <section class="overview-hero">
           <div class="overview-copy">
-            <p class="eyebrow accent">CARTEIRA DE RECEBÍVEIS</p>
-            <h2>Controle tudo o que você tem a receber.</h2>
-            <p>Valores, pagamentos e comprovantes organizados em um único painel privado.</p>
+            <p class="eyebrow accent">CARTEIRA PARTICULAR DE RECEBÍVEIS</p>
+            <h2>Posição financeira dos valores a receber.</h2>
+            <p>Consolidação dos créditos em aberto, recebimentos confirmados e documentos vinculados à sua carteira.</p>
           </div>
           <div class="overview-total">
-            <span>Saldo pendente</span>
+            <span>Saldo total em aberto</span>
             <strong id="heroRemaining">R$ 0,00</strong>
             <div class="overall-progress"><span id="overallProgressBar"></span></div>
-            <small id="overallProgressLabel">0% já recebido</small>
+            <small id="overallProgressLabel">0% do valor original recuperado</small>
           </div>
         </section>
 
         <div class="stats-grid">
           <article class="stat-card featured">
-            <div class="stat-head"><span class="stat-icon pending">R$</span><span class="stat-label">Total a receber</span></div>
+            <div class="stat-head"><span class="stat-icon pending">R$</span><span class="stat-label">Saldo em aberto</span></div>
             <strong id="statRemaining">R$ 0,00</strong>
-            <small>Saldo pendente somado</small>
+            <small>Valor atualmente disponível para recebimento</small>
           </article>
           <article class="stat-card">
-            <div class="stat-head"><span class="stat-icon received">✓</span><span class="stat-label">Total recebido</span></div>
+            <div class="stat-head"><span class="stat-icon received">✓</span><span class="stat-label">Total recuperado</span></div>
             <strong id="statPaid">R$ 0,00</strong>
             <small id="statPaidPct">0% do valor total</small>
           </article>
           <article class="stat-card">
-            <div class="stat-head"><span class="stat-icon neutral">∑</span><span class="stat-label">Valor original</span></div>
+            <div class="stat-head"><span class="stat-icon neutral">∑</span><span class="stat-label">Créditos registrados</span></div>
             <strong id="statOriginal">R$ 0,00</strong>
-            <small>Somando todas as dívidas</small>
+            <small>Valor original consolidado da carteira</small>
           </article>
           <article class="stat-card">
-            <div class="stat-head"><span class="stat-icon people">#</span><span class="stat-label">Pessoas</span></div>
+            <div class="stat-head"><span class="stat-icon people">#</span><span class="stat-label">Devedores acompanhados</span></div>
             <strong id="statPeople">0</strong>
-            <small>Cadastros acompanhados</small>
+            <small>Cadastros ativos na sua carteira</small>
           </article>
         </div>
 
         <div class="section-head">
           <div>
-            <p class="eyebrow">ACOMPANHAMENTO</p>
-            <h2>Contas em aberto</h2>
-            <p class="section-description">Acompanhe o saldo e o progresso de cada pessoa.</p>
+            <p class="eyebrow">POSIÇÃO INDIVIDUAL</p>
+            <h2>Carteira por devedor</h2>
+            <p class="section-description">Saldo atual, percentual recebido e evolução financeira de cada cadastro.</p>
           </div>
         </div>
         <div id="debtorCards" class="debtor-grid"></div>
@@ -128,10 +128,10 @@
         <div class="panel recent-panel">
           <div class="section-head compact">
             <div>
-              <p class="eyebrow">MOVIMENTAÇÕES</p>
-              <h2>Pagamentos recentes</h2>
+              <p class="eyebrow">FLUXO DE RECEBIMENTOS</p>
+              <h2>Últimas movimentações</h2>
             </div>
-            <span class="panel-tag">EXTRATO</span>
+            <span class="panel-tag">REGISTROS</span>
           </div>
           <div id="recentList" class="transaction-list"></div>
         </div>
@@ -141,9 +141,9 @@
         <div class="panel table-panel">
           <div class="section-head compact people-head">
             <div>
-              <p class="eyebrow">CADASTROS</p>
-              <h2>Pessoas e saldos</h2>
-              <p class="section-description">Consulte rapidamente valores originais, pagos e pendentes.</p>
+              <p class="eyebrow">CARTEIRA DETALHADA</p>
+              <h2>Devedores e posição financeira</h2>
+              <p class="section-description">Consulte o valor original, o montante recuperado e o saldo em aberto de cada devedor.</p>
             </div>
             <label class="search-wrap">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m21 21-4.35-4.35M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z"/></svg>
@@ -151,7 +151,7 @@
             </label>
           </div>
           <div class="table-header" aria-hidden="true">
-            <span>Pessoa</span><span>Valor original</span><span>Recebido</span><span>Restante</span><span></span>
+            <span>Devedor</span><span>Crédito original</span><span>Recuperado</span><span>Saldo em aberto</span><span></span>
           </div>
           <div id="peopleTable" class="people-table"></div>
         </div>
@@ -160,11 +160,11 @@
       <section id="viewReceipts" class="view-section hidden">
         <div class="section-head receipts-head">
           <div>
-            <p class="eyebrow">DOCUMENTOS</p>
-            <h2>Comprovantes de pagamento</h2>
-            <p class="section-description">Arquivos vinculados aos pagamentos registrados.</p>
+            <p class="eyebrow">DOCUMENTAÇÃO FINANCEIRA</p>
+            <h2>Comprovantes de recebimento</h2>
+            <p class="section-description">Documentos vinculados a cada movimentação registrada na sua carteira.</p>
           </div>
-          <span class="secure-file-badge">Arquivos privados</span>
+          <span class="secure-file-badge">Documentos protegidos</span>
         </div>
         <div id="receiptGrid" class="receipt-grid"></div>
       </section>
@@ -173,9 +173,9 @@
         <div class="account-hero panel">
           <div class="account-avatar" aria-hidden="true">A</div>
           <div class="account-hero-copy">
-            <p class="eyebrow accent">CONTA ADMINISTRATIVA</p>
-            <h2 id="accountDisplayName">Administrador</h2>
-            <p>Essa é a única conta com acesso ao painel. Usuário e senha podem ser alterados aqui com confirmação da senha atual.</p>
+            <p class="eyebrow accent">SEGURANÇA DE ACESSO</p>
+            <h2 id="accountDisplayName">Gabriel Mendes Correa</h2>
+            <p>Área exclusiva de Gabriel Mendes Correa para gerenciamento das credenciais e sessões de acesso ao painel financeiro.</p>
           </div>
           <span class="status-pill paid">ATIVA</span>
         </div>
@@ -294,7 +294,7 @@
         </div>
         <div class="stats-grid person-stats">
           <article class="stat-card"><span class="stat-label">Dívida original</span><strong id="personOriginal"></strong><small>Valor inicial cadastrado</small></article>
-          <article class="stat-card"><span class="stat-label">Total recebido</span><strong id="personPaid"></strong><small>Pagamentos confirmados</small></article>
+          <article class="stat-card"><span class="stat-label">Total recuperado</span><strong id="personPaid"></strong><small>Pagamentos confirmados</small></article>
           <article class="stat-card featured"><span class="stat-label">Saldo restante</span><strong id="personRemaining"></strong><small>Valor ainda pendente</small></article>
           <article class="stat-card"><span class="stat-label">Progresso</span><strong id="personProgress"></strong><small>Percentual quitado</small></article>
         </div>
@@ -363,6 +363,6 @@
   </div>
 
   <div id="toast" class="toast hidden"></div>
-  <script src="/app.js?v=3.0.0"></script>
+  <script src="/app.js?v=4.0.0"></script>
 </body>
 </html>
