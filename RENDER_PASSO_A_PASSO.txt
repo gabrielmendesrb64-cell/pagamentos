@@ -1,0 +1,23 @@
+CONTROLE DE DÍVIDAS - RENDER
+
+1. Envie todos os arquivos desta pasta para o seu repositório do GitHub.
+
+2. No Render > Settings, confirme:
+   Build Command: npm install
+   Start Command: npm start
+
+3. No Render > Environment, adicione:
+   NODE_VERSION = 22.16.0
+   NODE_ENV = production
+   ADMIN_USER = admin
+   ADMIN_PASSWORD = escolha sua senha
+   SESSION_SECRET = use uma frase/chave aleatória com pelo menos 32 caracteres
+
+4. Vá em Manual Deploy.
+5. Escolha "Clear build cache & deploy".
+
+6. No log, confirme que o Render está usando Node 22 e não Node 26.
+
+IMPORTANTE:
+- Não envie arquivo .env para o GitHub.
+- Render Free não possui armazenamento local permanente para este uso. Banco SQLite e comprovantes podem sumir após recriação/reinício da instância. Para uso definitivo, use armazenamento persistente externo.
