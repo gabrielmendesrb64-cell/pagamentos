@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b0d10">
+  <title>Controle de Dívidas • Acesso privado</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body class="login-body">
+  <main class="login-shell">
+    <section class="login-card">
+      <div class="brand-mark">CD</div>
+      <p class="eyebrow">PAINEL PESSOAL</p>
+      <h1>Controle de Dívidas</h1>
+      <p class="muted">Acesso privado. Entre para consultar saldos, pagamentos e comprovantes.</p>
+
+      <form id="loginForm" class="stack-lg" autocomplete="on">
+        <label class="field">
+          <span>Usuário</span>
+          <input id="username" name="username" autocomplete="username" required autofocus>
+        </label>
+        <label class="field">
+          <span>Senha</span>
+          <input id="password" name="password" type="password" autocomplete="current-password" required>
+        </label>
+        <button class="btn btn-primary btn-full" type="submit">Entrar no painel</button>
+        <p id="loginError" class="form-error" aria-live="polite"></p>
+      </form>
+
+      <div class="privacy-note">🔒 Nenhuma informação financeira fica visível sem login.</div>
+    </section>
+  </main>
+  <script src="/login.js"></script>
+</body>
+</html>

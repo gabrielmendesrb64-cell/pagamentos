@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b0d10">
+  <title>Controle de Dívidas</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div>
+        <div class="sidebar-brand">
+          <div class="brand-mark small">CD</div>
+          <div><strong>Controle</strong><span>Dívidas pessoais</span></div>
+        </div>
+        <nav class="nav-list" aria-label="Navegação principal">
+          <button class="nav-item active" data-view="dashboard"><span>⌂</span> Visão geral</button>
+          <button class="nav-item" data-view="people"><span>👥</span> Pessoas</button>
+          <button class="nav-item" data-view="receipts"><span>▣</span> Comprovantes</button>
+        </nav>
+      </div>
+      <div class="sidebar-footer">
+        <button class="nav-item" id="backupBtn"><span>⇩</span> Fazer backup</button>
+        <button class="nav-item danger-text" id="logoutBtn"><span>↪</span> Sair</button>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <button class="icon-btn mobile-only" id="menuBtn" aria-label="Abrir menu">☰</button>
+        <div>
+          <p class="eyebrow" id="viewEyebrow">RESUMO FINANCEIRO</p>
+          <h1 id="viewTitle">Visão geral</h1>
+        </div>
+        <button class="btn btn-primary" id="newPersonBtn">+ Nova pessoa</button>
+      </header>
+
+      <section id="viewDashboard" class="view-section">
+        <div class="stats-grid">
+          <article class="stat-card featured">
+            <span class="stat-label">Total a receber</span>
+            <strong id="statRemaining">R$ 0,00</strong>
+            <small>Saldo pendente somado</small>
+          </article>
+          <article class="stat-card">
+            <span class="stat-label">Total já recebido</span>
+            <strong id="statPaid">R$ 0,00</strong>
+            <small id="statPaidPct">0% do valor total</small>
+          </article>
+          <article class="stat-card">
+            <span class="stat-label">Valor original</span>
+            <strong id="statOriginal">R$ 0,00</strong>
+            <small>Somando todas as dívidas</small>
+          </article>
+          <article class="stat-card">
+            <span class="stat-label">Pessoas</span>
+            <strong id="statPeople">0</strong>
+            <small>Cadastros ativos</small>
+          </article>
+        </div>
+
+        <div class="section-head">
+          <div><p class="eyebrow">ACOMPANHAMENTO</p><h2>Quem ainda deve</h2></div>
+        </div>
+        <div id="debtorCards" class="debtor-grid"></div>
+
+        <div class="panel recent-panel">
+          <div class="section-head compact">
+            <div><p class="eyebrow">HISTÓRICO</p><h2>Pagamentos recentes</h2></div>
+          </div>
+          <div id="recentList" class="transaction-list"></div>
+        </div>
+      </section>
+
+      <section id="viewPeople" class="view-section hidden">
+        <div class="panel">
+          <div class="section-head compact">
+            <div><p class="eyebrow">CADASTROS</p><h2>Todas as pessoas</h2></div>
+            <div class="search-wrap"><input id="peopleSearch" placeholder="Buscar por nome..."></div>
+          </div>
+          <div id="peopleTable" class="people-table"></div>
+        </div>
+      </section>
+
+      <section id="viewReceipts" class="view-section hidden">
+        <div class="section-head">
+          <div><p class="eyebrow">ARQUIVOS</p><h2>Comprovantes de pagamento</h2></div>
+        </div>
+        <div id="receiptGrid" class="receipt-grid"></div>
+      </section>
+
+      <section id="viewPerson" class="view-section hidden">
+        <button class="back-link" id="backBtn">← Voltar</button>
+        <div class="person-hero panel">
+          <div>
+            <p class="eyebrow">DETALHES DA DÍVIDA</p>
+            <h2 id="personName">Pessoa</h2>
+            <p class="muted" id="personNotes"></p>
+          </div>
+          <div class="hero-actions">
+            <button class="btn btn-secondary" id="editPersonBtn">Editar</button>
+            <button class="btn btn-primary" id="addPaymentBtn">+ Registrar pagamento</button>
+          </div>
+        </div>
+        <div class="stats-grid person-stats">
+          <article class="stat-card"><span class="stat-label">Dívida original</span><strong id="personOriginal"></strong></article>
+          <article class="stat-card"><span class="stat-label">Já pago</span><strong id="personPaid"></strong></article>
+          <article class="stat-card featured"><span class="stat-label">Saldo restante</span><strong id="personRemaining"></strong></article>
+          <article class="stat-card"><span class="stat-label">Progresso</span><strong id="personProgress"></strong></article>
+        </div>
+        <div class="panel">
+          <div class="section-head compact"><div><p class="eyebrow">MOVIMENTAÇÕES</p><h2>Histórico de pagamentos</h2></div></div>
+          <div id="paymentHistory" class="transaction-list"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal-backdrop hidden" id="personModal">
+    <div class="modal-card">
+      <button class="modal-close" data-close="personModal">×</button>
+      <p class="eyebrow">CADASTRO</p>
+      <h2 id="personModalTitle">Nova pessoa</h2>
+      <form id="personForm" class="stack-lg">
+        <input type="hidden" id="personId">
+        <label class="field"><span>Nome</span><input id="personFormName" maxlength="100" required></label>
+        <label class="field"><span>Valor original da dívida</span><div class="money-input"><span>R$</span><input id="personFormAmount" type="number" min="0.01" step="0.01" required></div></label>
+        <label class="field"><span>Observações</span><textarea id="personFormNotes" rows="4" maxlength="1500" placeholder="Ex.: motivo da dívida, acordo, vencimento..."></textarea></label>
+        <p class="form-error" id="personFormError"></p>
+        <button class="btn btn-primary btn-full" type="submit">Salvar</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal-backdrop hidden" id="paymentModal">
+    <div class="modal-card wide">
+      <button class="modal-close" data-close="paymentModal">×</button>
+      <p class="eyebrow">NOVO RECEBIMENTO</p>
+      <h2>Registrar pagamento</h2>
+      <p class="muted" id="paymentBalanceHint"></p>
+      <form id="paymentForm" class="stack-lg" enctype="multipart/form-data">
+        <label class="field"><span>Valor recebido</span><div class="money-input"><span>R$</span><input id="paymentAmount" name="amount" type="number" min="0.01" step="0.01" required></div></label>
+        <div class="form-grid">
+          <label class="field"><span>Data do pagamento</span><input id="paymentDate" name="paymentDate" type="date"></label>
+          <label class="field"><span>Forma de pagamento</span><select id="paymentMethod" name="method"><option value="PIX">PIX</option><option value="Dinheiro">Dinheiro</option><option value="Transferência">Transferência</option><option value="Outro">Outro</option></select></label>
+        </div>
+        <label class="field"><span>Observação</span><textarea id="paymentNote" name="note" rows="3" maxlength="1000" placeholder="Opcional"></textarea></label>
+        <label class="upload-box" id="uploadBox">
+          <input id="receiptInput" name="receipt" type="file" accept="image/jpeg,image/png,image/webp,application/pdf">
+          <strong>📎 Anexar comprovante</strong>
+          <span id="receiptFileName">JPG, PNG, WEBP ou PDF • até 8 MB</span>
+        </label>
+        <p class="form-error" id="paymentFormError"></p>
+        <button class="btn btn-primary btn-full" type="submit">Confirmar pagamento</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal-backdrop hidden" id="receiptModal">
+    <div class="modal-card receipt-modal-card">
+      <button class="modal-close" data-close="receiptModal">×</button>
+      <div id="receiptPreview"></div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
+  <script src="/app.js"></script>
+</body>
+</html>
